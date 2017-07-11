@@ -1,0 +1,40 @@
+/*div {
+  border: 1px solid red;
+}*/
+.headerBackground {
+  background-color: #00838f;
+}
+
+.header {
+  background-color: #c5e1a5;
+}
+
+.banner {
+  color: white;
+  /*display: flex;*/
+}
+
+.tagline {
+  color: white;
+}
+/*
+h1 {
+}*/
+
+.dropdown-button {
+  margin-bottom: 15px;
+  display: block;
+  text-align: left;
+  padding: 0 .5rem
+}
+
+#logo {
+  width: 100px;
+  margin-left: 15px;
+  margin-top: 15px;
+
+}
+#map {
+   width: 100%;
+   height: 700px;
+ }

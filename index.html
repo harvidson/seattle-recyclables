@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Seattle Stuffcycle</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css" />
+    <script defer
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4WE6K1kw0scMlosPij27vO-7Fuf4cx08&v=3&callback=initMap"></script>
+    <script defer src="index.js"></script>
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="headerBackground">
+          <p>
+            &nbsp;
+          </p>
+      </div>
+      <div class="row">
+
+        <div class="col l1 banner valign-wrapper" >
+          <img id="logo" src="Logomakr_7oB89c.png" alt="Seattle Stuffcycle logo" />
+        </div>
+        <div class="col l8 banner" >
+          <h1>Seattle Stuffcycle</h1>
+        </div>
+        <div class="col l3 banner">
+          <div class="tagline valign-wrapper">Find the best way to reuse, recycle, or responsibly dispose of your stuff.</div>
+        </div>
+      </div>
+      <div class="headerBackground">
+          <p>
+            &nbsp;
+          </p>
+      </div>
+
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="row">
+
+          <div class="col l3" id="materials">
+            <h4>Type of stuff</h4>
+            <p>
+              What are you looking to get rid of?
+            </p>
+
+          <div class="categories">
+              <a class="dropdown-button btn cyan darken-3" href="#" data-activates="electronics" data-beloworigin="true">Electronics</a>
+                 <ul id="electronics" class="dropdown-content">
+                   <li><a href="#!">one</a></li>
+                   <li><a href="#!">two</a></li>
+                   <li><a href="#!">three</a></li>
+                   <li><a href="#!">four</a></li>
+                   <li><a href="#!">five</a></li>
+                 </ul>
+              <a class="dropdown-button btn cyan darken-3" href="#" data-activates="buildingSupplies" data-beloworigin="true">Building supplies</a>
+                 <ul id="buildingSupplies" class="dropdown-content">
+                   <li><a href="#!">one</a></li>
+                   <li><a href="#!">two</a></li>
+                   <li><a href="#!">three</a></li>
+                   <li><a href="#!">four</a></li>
+                   <li><a href="#!">five</a></li>
+                 </ul>
+               <a class="dropdown-button btn cyan darken-3" href="#" data-activates="hazMat" data-beloworigin="true">Hazardous materials</a>
+                    <ul id="hazMat" class="dropdown-content">
+                      <li><a href="#!">one</a></li>
+                      <li><a href="#!">two</a></li>
+                      <li><a href="#!">three</a></li>
+                      <li><a href="#!">four</a></li>
+                      <li><a href="#!">five</a></li>
+                    </ul>
+                <a class="dropdown-button btn cyan darken-3" href="#" data-activates="furniture" data-beloworigin="true">Furniture</a>
+                       <ul id="furniture" class="dropdown-content">
+                         <li><a href="#!">one</a></li>
+                         <li><a href="#!">two</a></li>
+                         <li><a href="#!">three</a></li>
+                         <li><a href="#!">four</a></li>
+                         <li><a href="#!">five</a></li>
+                       </ul>
+                 <a class="dropdown-button btn cyan darken-3" href="#" data-activates="textiles" data-beloworigin="true">Textiles</a>
+                        <ul id="textiles" class="dropdown-content">
+                          <li id="clothing"><a href="#!">Gently used clothing</a></li>
+                          <li id="threadcycle"><a href="#!">Worn, torn, or stained items</a></li>
+                          <li id="garbage"><a href="#!">Wet, mildewed, or contaminated items</a></li>
+                        </ul>
+                  <a class="dropdown-button btn cyan darken-3" href="#" data-activates="pharmaceuticals" data-beloworigin="true">Pharmaceuticals</a>
+                         <ul id="pharmaceuticals" class="dropdown-content">
+                           <li><a href="#!">one</a></li>
+                           <li><a href="#!">two</a></li>
+                           <li><a href="#!">three</a></li>
+                           <li><a href="#!">four</a></li>
+                           <li><a href="#!">five</a></li>
+                         </ul>
+            </div>
+          </div>
+
+          <div class="col l9">
+            <div id="map">
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+
+
+    </main>
+
+    <footer>
+
+
+    </footer>
+
+  </body>
+</html>
