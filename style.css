@@ -16,6 +16,8 @@
 
 .tagline {
   color: white;
+  margin-right: 15px;
+  margin-top: 35px;
 }
 /*
 h1 {
@@ -30,7 +32,7 @@ h1 {
 
 #logo {
   width: 100px;
-  margin-left: 15px;
+  margin-left: 30px;
   margin-top: 15px;
 
 }

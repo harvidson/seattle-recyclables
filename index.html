@@ -6,13 +6,13 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
     <link rel="stylesheet" href="style.css" />
+    <script src="api_keys.js"></script>
     <script defer
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4WE6K1kw0scMlosPij27vO-7Fuf4cx08&v=3&callback=initMap"></script>
+    <script src="objects.js"></script>
     <script defer src="index.js"></script>
   </head>
 
@@ -25,10 +25,10 @@
       </div>
       <div class="row">
 
-        <div class="col l1 banner valign-wrapper" >
+        <div class="col l2 banner valign-wrapper" >
           <img id="logo" src="Logomakr_7oB89c.png" alt="Seattle Stuffcycle logo" />
         </div>
-        <div class="col l8 banner" >
+        <div class="col l7 banner">
           <h1>Seattle Stuffcycle</h1>
         </div>
         <div class="col l3 banner">
@@ -56,11 +56,16 @@
           <div class="categories">
               <a class="dropdown-button btn cyan darken-3" href="#" data-activates="electronics" data-beloworigin="true">Electronics</a>
                  <ul id="electronics" class="dropdown-content">
-                   <li><a href="#!">one</a></li>
-                   <li><a href="#!">two</a></li>
-                   <li><a href="#!">three</a></li>
-                   <li><a href="#!">four</a></li>
-                   <li><a href="#!">five</a></li>
+                   <li id="computers"><a href="#!">Computers, laptops, and tablets</a></li>
+                   <li id="phones"><a href="#!">Cell phones</a></li>
+                   <li id="cameras"><a href="#!">Cameras</a></li>
+                   <li id="av"><a href="#!">Audio-visual equipment</a></li>
+                   <li id="games"><a href="#!">Gaming devices</a></li>
+                   <li id="monitors"><a href="#!">Monitors</a></li>
+                   <li id="tvs"><a href="#!">Televisions</a></li>
+                   <li id="printers"><a href="#!">Printers and copiers</a></li>
+                   <li id="cartridges"><a href="#!">Printer cartridges</a></li>
+
                  </ul>
               <a class="dropdown-button btn cyan darken-3" href="#" data-activates="buildingSupplies" data-beloworigin="true">Building supplies</a>
                  <ul id="buildingSupplies" class="dropdown-content">
@@ -92,13 +97,10 @@
                           <li id="threadcycle"><a href="#!">Worn, torn, or stained items</a></li>
                           <li id="garbage"><a href="#!">Wet, mildewed, or contaminated items</a></li>
                         </ul>
-                  <a class="dropdown-button btn cyan darken-3" href="#" data-activates="pharmaceuticals" data-beloworigin="true">Pharmaceuticals</a>
+                  <a class="dropdown-button btn cyan darken-3" href="#" data-activates="pharmaceuticals" data-beloworigin="true">Medical materials</a>
                          <ul id="pharmaceuticals" class="dropdown-content">
-                           <li><a href="#!">one</a></li>
-                           <li><a href="#!">two</a></li>
-                           <li><a href="#!">three</a></li>
-                           <li><a href="#!">four</a></li>
-                           <li><a href="#!">five</a></li>
+                           <li id="medicines"><a href="#!">Medicines</a></li>
+                           <li id="sharps"><a href="#!">Sharps</a></li>
                          </ul>
             </div>
           </div>
