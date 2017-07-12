@@ -15,16 +15,32 @@ function initMap() {
     center: seattle
   });
 
-  $('#computers').click(function(e){
-    createComputerMarkers();
-  });
+  const infoWindow = new google.maps.InfoWindow({});
 
+  // establishes map boundaries
+  let bounds = new google.maps.LatLngBounds();
+
+//test case for creating markers. event listener for selection has to go up here
+  $('#computers').click(function(e){
+    createComputerMarkers(bounds);
+  });
+  // mock-up--loops through sample locations, adding a marker object to markers for each one
+
+  // for (let i = 0; i < markers.length; i++) {
+  //   const position = markers[i].location;
+  //   const title = markers[i].title;
+  //   const marker = new google.maps.Marker({
+  //     map: map,
+  //     position: position,
+  //     title: title,
+  //     animation: google.maps.Animation.DROP,
+  //     id: i
+  //   });
+  //   markers.push(marker);
 
 }
 
-function createComputerMarkers(){
-
-
+function createComputerMarkers(bounds){
   const marker = new google.maps.Marker({
     position: {
       lat: 47.620830,
@@ -33,50 +49,31 @@ function createComputerMarkers(){
     map: map
   });
   markers.push(marker);
+  // adjust map scope to fit the marker
+  bounds.extend(marker.position);
+  map.fitBounds(bounds);
+
+  // listen for click event on earch marker
+  marker.addListener('click', function() {
+    populateInfoWindow(this, infoWindow);
+  });
+  // give location details in an infoWindow for selected marker
+  function populateInfoWindow(marker, infoWindow) {
+    if (infoWindow.marker != marker) {
+      infoWindow.marker = marker;
+      infoWindow.setContent(`<div>${marker.title}</div>`);
+      infoWindow.open(map, marker);
+      infoWindow.addListener('closeclick', function() {
+        //weird bug here--if you close the infoWindow you can't immediately click on it again to reopen
+        infoWindow.close();
+      });
+    }
+  }
 }
 
 //this thing has to be disassembled and put into mapInit
 function createMarkers() {
-  const infoWindow = new google.maps.InfoWindow({});
 
-  // establishes map boundaries
-  let bounds = new google.maps.LatLngBounds();
-
-  //call getResults
-
-  // mock-up--loops through sample locations, adding a marker object to markers for each one
-
-  for (let i = 0; i < threadcycle.length; i++) {
-    const position = threadcycle[i].location;
-    const title = threadcycle[i].title;
-    const marker = new google.maps.Marker({
-      map: map,
-      position: position,
-      title: title,
-      animation: google.maps.Animation.DROP,
-      id: i
-    });
-    markers.push(marker);
-    // adjust map scope to fit the marker
-    bounds.extend(marker.position);
-    // listen for click event on earch marker
-    marker.addListener('click', function() {
-      populateInfoWindow(this, infoWindow);
-    });
-    // give location details in an infoWindow for selected marker
-    function populateInfoWindow(marker, infoWindow) {
-      if (infoWindow.marker != marker) {
-        infoWindow.marker = marker;
-        infoWindow.setContent(`<div>${marker.title}</div>`);
-        infoWindow.open(map, marker);
-        infoWindow.addListener('closeclick', function() {
-          //weird bug here--if you close the infoWindow you can't immediately click on it again to reopen
-          infoWindow.close();
-        });
-      }
-    }
-  }
-  map.fitBounds(bounds);
 }
 
 function adjustBounds() {
