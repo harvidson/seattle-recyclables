@@ -10,7 +10,17 @@ const nameMatches = {
     monitors: "Monitors",
     tvs: "TVs",
     printers: "Printers, Copiers, Fax Machines, Peripherals",
-    cartridges: "Inkjet Cartridges"
+    cartridges: "Inkjet Cartridges",
+    alkalines: "Alkaline Batteries",
+    rechargeables: "Rechargeable Batteries",
+    paint: "Paint",
+    cleaners: "Cleaning Products",
+    pesticides: "Pesticides",
+    asbestos: "Asbestos-Containing Waste",
+    motoroil: "Motor Oil and Automotive Fluids",
+    thermostats: "Mercury-Containing Thermostats"
+
+
 
 };
 //

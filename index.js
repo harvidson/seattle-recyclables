@@ -4,10 +4,8 @@
 
 let markers = [];
 let map;
-
-let searchID = 0;
+let searchID = -1;
 const iconColors = ['ff6f00', '00e676', '18ffff', 'ffea00']
-const defaultIcon = makeMarkerIcon('ff6f00');
 
 initMap();
 
@@ -15,6 +13,7 @@ initMap();
 $('.categories').on('click', 'li', function(event) {
   // console.log($(this).attr('id'));
   const selectedMaterial = $(this).attr('id');
+  console.log(selectedMaterial);
   //if id=threadcycle, use hardcoded array as data source to map options
   if (selectedMaterial === 'threadcycle') {
     // threadcycle();
@@ -24,9 +23,15 @@ $('.categories').on('click', 'li', function(event) {
     console.log("you'll get a toast telling you to throw that stuff in garbage");
     //otherwise, use api call against county data to map options
   } else {
-    getMaterialHandled(selectedMaterial);
+    const material = nameMatches[selectedMaterial];
+    console.log(material);
+    getResults(selectedMaterial, material);
   }
 });
+
+
+
+// ***********************google maps***************************
 
 function initMap() {
   const seattle = {
@@ -39,16 +44,30 @@ function initMap() {
   });
 }
 
-function createMarkers(data) {
+function createMarkers(data, selectedMaterial) {
   const infoWindow = new google.maps.InfoWindow({});
   let bounds = new google.maps.LatLngBounds();
+  searchID++;
 
-//loop through data and
   for (let i = 0; i < data.length; i++) {
-    const position = {
-      lat: data[i].geolocation.coordinates[1],
-      lng: data[i].geolocation.coordinates[0]
+    console.log(data);
+    console.log(data[i]);
+    let position;
+
+    if (typeof data[i].geolocation === 'object') {
+      position = {
+        lat: data[i].geolocation.coordinates[1],
+        lng: data[i].geolocation.coordinates[0]
+      };
+      console.log(position);
+    } else {
+      const address = data[i].geolocation_address;
+      console.log(address);
+      position = getCoordinates(address)
+      console.log(position);
     };
+
+
     const title = data[i].provider_name;
     const marker = new google.maps.Marker({
       map: map,
@@ -56,7 +75,8 @@ function createMarkers(data) {
       title: title,
       animation: google.maps.Animation.DROP,
       icon: makeMarkerIcon(iconColors[searchID]),
-      id: i
+      id: i,
+      material: selectedMaterial
     });
     markers.push(marker);
     bounds.extend(marker.position);
@@ -65,23 +85,51 @@ function createMarkers(data) {
     marker.addListener('click', function() {
       populateInfoWindow(this, infoWindow);
     });
-
   }
   map.fitBounds(bounds);
-  console.log(markers);
-  searchID++;
+  // console.log(markers);
+
 }
 
+function getCoordinates(address) {
+  $.ajax({
+    url: `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyAynp8pr3LY7S2x60jYQ5DXaJz_sMwIhho`
+  }).done(function(address) {
+    createPosition(address)
+  }).fail(function() {
+    alert("There was an error. Please search again.")
+  });
+}
 
-// make an array of marker colors; add this-- createMarkerIcon(markerColors[i])--to event listener on click
+function createPosition(address) {
+  const position = {
+    lat: address.results[0].geometry.location.lat,
+    lng: address.results[0].geometry.location.lng
+  };
+  console.log(position);
+  console.log('createPosition ran');
+  return position;
+}
+
+// function depopulateMap(materialDeselected) {
+//   for (marker of markers) {
+//     if (marker.material === materialDeselected) {
+//       marker.setMap(null)
+//     }
+//   }
+// }
+//
+//
+// depopulateMap(materialDeselected);
+
 function makeMarkerIcon(markerColor) {
   var markerImage = new google.maps.MarkerImage(
-    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
     '|40|_|%E2%80%A2',
     new google.maps.Size(21, 34),
     new google.maps.Point(0, 0),
     new google.maps.Point(10, 34),
-    new google.maps.Size(21,34));
+    new google.maps.Size(21, 34));
   return markerImage;
 }
 
@@ -98,22 +146,61 @@ function populateInfoWindow(marker, infoWindow) {
   }
 }
 
-// change id of selected item into a string that matches material_handled in county json
-function getMaterialHandled(selectedMaterial) {
-  console.log(nameMatches[selectedMaterial]);
-  let materialHandled = nameMatches[selectedMaterial];
-  getResults(materialHandled);
-}
+// ************results from King County data**************
 
-function getResults(materialHandled) {
+function getResults(selectedMaterial, material) {
   $.ajax({
-    url: `https://data.kingcounty.gov/resource/tzui-ygc5.json?city=Seattle&material_handled=${materialHandled}`,
-    dataType: 'json',
+    url: `https://data.kingcounty.gov/resource/tzui-ygc5.json?city=Seattle&material_handled=${material}`,
+    dataType: 'json'
   }).done(function(data) {
-    //i think line below will become createMarkers(data);
-    console.log("here's the data from KC: ", data);
-    createMarkers(data);
+    createMarkers(data, selectedMaterial);
+    addTags(selectedMaterial); //or could this go above with event listener?
   }).fail(function() {
     alert("There was an error. Please search again.")
   });
 }
+
+//create a tag when a material is selected
+// function addTags(selectedMaterial) {
+//   const $newTag = $('<div>').addClass('chip').text(selectedMaterial).css("background-color", `#${iconColors[searchID]}`);
+//   const $newIcon = $('<i>').addClass('close material-icons').text('close');
+//   $newTag.append($newIcon);
+//
+//
+//   // $('.chips').material_chip();
+//
+// }
+let tagsArray = [];
+
+function addTags(selectedMaterial) {
+  tagsArray.push({
+    tag: selectedMaterial
+  });
+  $('.chips').material_chip({
+    data: tagsArray
+  });
+  $(`.chip:contains('${selectedMaterial}')`).css("background-color", `#${iconColors[searchID]}`)
+  // console.log(tagsArray);
+}
+
+// $('.chips').on('chip.add', function(e, chip){
+//   // you have the added chip here
+//   console.log("i want to add a color");
+//   chip.css("background-color", `#${iconColors[searchID]}`);
+// });
+
+$('.chips').on('chip.delete', function(e, chip) {
+  console.log(chip);
+  console.log("chip deleted");
+  // you have the deleted chip here
+});
+
+// $('.chips-initial').material_chip({
+//   data: [{
+//     tag: 'Apple',
+//   }, {
+//     tag: 'Microsoft',
+//   }, {
+//     tag: 'Google',
+//   }],
+// });
