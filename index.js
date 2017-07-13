@@ -50,24 +50,7 @@ function createMarkers(data, selectedMaterial) {
   searchID++;
 
   for (let i = 0; i < data.length; i++) {
-    console.log(data);
-    console.log(data[i]);
-    let position;
-
-    if (typeof data[i].geolocation === 'object') {
-      position = {
-        lat: data[i].geolocation.coordinates[1],
-        lng: data[i].geolocation.coordinates[0]
-      };
-      console.log(position);
-    } else {
-      const address = data[i].geolocation_address;
-      console.log(address);
-      position = getCoordinates(address)
-      console.log(position);
-    };
-
-
+    const position = createMarkerPosition(data, selectedMaterial, i)
     const title = data[i].provider_name;
     const marker = new google.maps.Marker({
       map: map,
@@ -88,14 +71,34 @@ function createMarkers(data, selectedMaterial) {
   }
   map.fitBounds(bounds);
   // console.log(markers);
-
 }
 
-function getCoordinates(address) {
+function createMarkerPosition(data, selectedMaterial, i) {
+  let position;
+
+    if (typeof data[i].geolocation === 'object') {
+      position = {
+        lat: data[i].geolocation.coordinates[1],
+        lng: data[i].geolocation.coordinates[0]
+      };
+    } else {
+      const address = data[i].geolocation_address;
+      console.log(address);
+      getCoordinates(address, function(position){
+        console.log(position);
+        return position
+      });
+      console.log(position);
+    }
+  console.log(position);
+  return position;
+}
+
+function getCoordinates(address,cb) {
   $.ajax({
     url: `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyAynp8pr3LY7S2x60jYQ5DXaJz_sMwIhho`
   }).done(function(address) {
-    createPosition(address)
+    cb(createPosition(address));
   }).fail(function() {
     alert("There was an error. Please search again.")
   });
@@ -111,16 +114,7 @@ function createPosition(address) {
   return position;
 }
 
-// function depopulateMap(materialDeselected) {
-//   for (marker of markers) {
-//     if (marker.material === materialDeselected) {
-//       marker.setMap(null)
-//     }
-//   }
-// }
-//
-//
-// depopulateMap(materialDeselected);
+
 
 function makeMarkerIcon(markerColor) {
   var markerImage = new google.maps.MarkerImage(
@@ -161,46 +155,36 @@ function getResults(selectedMaterial, material) {
 }
 
 //create a tag when a material is selected
-// function addTags(selectedMaterial) {
-//   const $newTag = $('<div>').addClass('chip').text(selectedMaterial).css("background-color", `#${iconColors[searchID]}`);
-//   const $newIcon = $('<i>').addClass('close material-icons').text('close');
-//   $newTag.append($newIcon);
-//
-//
-//   // $('.chips').material_chip();
-//
-// }
+
 let tagsArray = [];
 
 function addTags(selectedMaterial) {
   tagsArray.push({
-    tag: selectedMaterial
+    tag: selectedMaterial,
+    color: iconColors[searchID]
   });
   $('.chips').material_chip({
     data: tagsArray
   });
-  $(`.chip:contains('${selectedMaterial}')`).css("background-color", `#${iconColors[searchID]}`)
-  // console.log(tagsArray);
+  colorTag()
 }
 
-// $('.chips').on('chip.add', function(e, chip){
-//   // you have the added chip here
-//   console.log("i want to add a color");
-//   chip.css("background-color", `#${iconColors[searchID]}`);
-// });
+function colorTag() {
+  for (const tag of tagsArray) {
+    $(`.chip:contains('${tag.tag}')`).css("background-color", `#${tag.color}`)
+    console.log(tag);
+  }
+}
 
 $('.chips').on('chip.delete', function(e, chip) {
-  console.log(chip);
-  console.log("chip deleted");
-  // you have the deleted chip here
+  const markersToDelete = chip.tag;
+  deletePins(markersToDelete);
 });
 
-// $('.chips-initial').material_chip({
-//   data: [{
-//     tag: 'Apple',
-//   }, {
-//     tag: 'Microsoft',
-//   }, {
-//     tag: 'Google',
-//   }],
-// });
+function deletePins(markersToDelete) {
+  for (marker of markers) {
+    if (marker.material === markersToDelete) {
+      marker.setMap(null)
+    }
+  }
+}
