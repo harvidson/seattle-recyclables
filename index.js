@@ -49,56 +49,63 @@ function createMarkers(data, selectedMaterial) {
   let bounds = new google.maps.LatLngBounds();
   searchID++;
 
-  for (let i = 0; i < data.length; i++) {
-    const position = createMarkerPosition(data, selectedMaterial, i)
-    const title = data[i].provider_name;
-    const marker = new google.maps.Marker({
-      map: map,
-      position: position,
-      title: title,
-      animation: google.maps.Animation.DROP,
-      icon: makeMarkerIcon(iconColors[searchID]),
-      id: i,
-      material: selectedMaterial
-    });
-    markers.push(marker);
-    bounds.extend(marker.position);
-
-    // listen for click event on each marker
-    marker.addListener('click', function() {
-      populateInfoWindow(this, infoWindow);
-    });
-  }
-  map.fitBounds(bounds);
-  // console.log(markers);
+  createMarkersFor(data, selectedMaterial, bounds, function(){
+    map.fitBounds(bounds);
+  });
 }
 
-function createMarkerPosition(data, selectedMaterial, i) {
-  let position;
+function createMarkersFor(data, selectedMaterial, bounds, cb){
+  let returnedAsync = 0;
 
-    if (typeof data[i].geolocation === 'object') {
-      position = {
-        lat: data[i].geolocation.coordinates[1],
-        lng: data[i].geolocation.coordinates[0]
-      };
-    } else {
-      const address = data[i].geolocation_address;
-      console.log(address);
-      getCoordinates(address, function(position){
-        console.log(position);
-        return position
+  for (let i = 0; i < data.length; i++) {
+
+    createMarkerPosition(data, selectedMaterial, i, function(position){
+      const title = data[i].provider_name;
+      const marker = new google.maps.Marker({
+        map: map,
+        position: position,
+        title: title,
+        animation: google.maps.Animation.DROP,
+        icon: makeMarkerIcon(iconColors[searchID]),
+        id: i,
+        material: selectedMaterial
       });
-      console.log(position);
-    }
-  console.log(position);
-  return position;
+      markers.push(marker);
+      bounds.extend(marker.position);
+
+      // listen for click event on each marker
+      marker.addListener('click', function() {
+        populateInfoWindow(this, infoWindow);
+      });
+
+      if(++returnedAsync === data.length){
+        cb();
+      }
+    })
+  }
+}
+
+function createMarkerPosition(data, selectedMaterial, i, cb) {
+
+  if (typeof data[i].geolocation === 'object') {
+    return cb({
+      lat: data[i].geolocation.coordinates[1],
+      lng: data[i].geolocation.coordinates[0]
+    });
+  } else {
+    const address = data[i].geolocation_address;
+    console.log(address);
+    getCoordinates(address, function(position){
+      return cb(position);
+    });
+  }
 }
 
 function getCoordinates(address,cb) {
   $.ajax({
     url: `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyAynp8pr3LY7S2x60jYQ5DXaJz_sMwIhho`
   }).done(function(address) {
-    cb(createPosition(address));
+    return cb(createPosition(address));
   }).fail(function() {
     alert("There was an error. Please search again.")
   });
