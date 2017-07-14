@@ -13,20 +13,28 @@ const nameMatches = {
     cartridges: "Inkjet Cartridges",
     alkalines: "Alkaline Batteries",
     rechargeables: "Rechargeable Batteries",
+    fluorescents: "Fluorescent Light Bulbs",
     paint: "Paint",
     cleaners: "Cleaning Products",
     pesticides: "Pesticides",
     asbestos: "Asbestos-Containing Waste",
     motoroil: "Motor Oil and Automotive Fluids",
-    thermostats: "Mercury-Containing Thermostats"
-
-
-
+    thermostats: "Mercury-Containing Thermostats",
+    mattresses: "Mattresses",
+    carpet: "Carpet",
+    microwaves: "Microwaves",
+    fridges: "Refrigerators, Freezers",
+    washers: "Other Major Appliances",
+    stoves: "Other Major Appliances",
+    airconditioners: "Air Conditioners, Heat Pumps",
+    appliances: "Small Household Appliances",
+    bicycles: "Bicycles and Bicycle Parts",
+    glass: "Window Glass",
+    iron: "Ferrous Metals",
+    metals: "Nonferrous Metals",
+    medicines: "Medicines",
+    sharps: "Medical Sharps"
 };
-//
-// const threadcycle = {
-//
-// }
 
 const threadcycle = [
  //  {title: '', location: {lat: , lng: }, address: ''},

@@ -1,30 +1,30 @@
 let markers = [];
 let map;
 let bounds = new google.maps.LatLngBounds();
+const infoWindow = new google.maps.InfoWindow({});
 let searchID = -1;
-const iconColors = ['ff6f00', '00acc1', '7cb342', '84ffff', 'ffd600', 'ffa726', '5c6bc0',  'c6ff00', 'd50000', '81d4fa'];
+const iconColors = ['ff6f00', '00acc1', '7cb342', '84ffff', 'ffd600',  '7b1fa2', 'ffa726', '5c6bc0', 'c6ff00', '039be5', 'd50000', '81d4fa', '64dd17', '6200ea', 'c51162'];
 
 initMap();
 
-// add event listeners to all the materials in drop-down lists
 $('.categories').on('click', 'li', function(event) {
   // console.log($(this).attr('id'));
   const selectedMaterial = $(this).attr('id');
-  //if id=threadcycle, use hardcoded array as data source to map options
+    //check for a couple of special cases
   if (selectedMaterial === 'threadcycle') {
-    // threadcycle();
-    console.log("you picked threadcycle; you should get a toast telling you more about this program");
-    //if id=garbage, use a toast to notify
+    const $toastContent = $(`<span>You can Threadcycle these items! See <a href="http://your.kingcounty.gov/solidwaste/ecoconsumer/threadcycle.asp" target="_blank">http://your.kingcounty.gov/solidwaste/ecoconsumer/threadcycle.asp</a> for details and locations.</span>`);
+    Materialize.toast($toastContent, 10000, 'rounded');
   } else if (selectedMaterial === 'garbage') {
-    console.log("you'll get a toast telling you to throw that stuff in garbage");
+    const $toastContent = $(`<span>This material is plain old garbage. You can throw it away curbside.</span>`);
+    Materialize.toast($toastContent, 4000, 'rounded');
+  } else if (selectedMaterial === 'mattresses') {
+    createMattressMarkers();
     //otherwise, use api call against county data to map options
   } else {
     const material = nameMatches[selectedMaterial];
     getResults(selectedMaterial, material);
   }
 });
-
-
 
 // ***********************google maps***************************
 
@@ -53,8 +53,36 @@ function createMarkers(data, selectedMaterial) {
   }
 }
 
+function createMattressMarkers() {
+  searchID++
+  const marker = new google.maps.Marker({
+    map: map,
+    position: {lat: 47.240616, lng: -122.4327794},
+    title: 'Spring Back Mattress Recycling NW',
+    animation: google.maps.Animation.DROP,
+    icon: makeMarkerIcon(iconColors[searchID]),
+    material: 'mattresses',
+    address: '117 Puyallup Ave',
+    city: 'Tacoma, WA',
+    zip: '98421',
+    phone: '253-302-3868',
+    url: 'http://www.nwfurniturebank.org/spring-back-mattress-recycling',
+    hours: 'Monday-Saturday 9:00 a.m. - 4:00 p.m.',
+    restrictions: 'The items can be in any condition but MUST be dry.',
+    description: '90% of a mattress is composed of recyclable materials. The more we can recycle, the more we can divert from landfills. For a fee we will process your mattress to ensure that it does not end up in a landfill. <br>Fees: $20 per piece for in home pick up; $10 per piece if it is brought to the furniture bank.'
+  });
+  markers.push(marker);
+  bounds.extend(marker.position);
+  map.fitBounds(bounds);
+  addTags('mattresses');
+
+
+  marker.addListener('click', function() {
+    populateInfoWindow(this, infoWindow);
+  });
+}
+
 function createMarkersFor(data, selectedMaterial, bounds, cb){
-  const infoWindow = new google.maps.InfoWindow({});
   let returnedAsync = 0;
 
   for (let i = 0; i < data.length; i++) {
@@ -75,7 +103,6 @@ function createMarkersFor(data, selectedMaterial, bounds, cb){
         title: title,
         animation: google.maps.Animation.DROP,
         icon: makeMarkerIcon(iconColors[searchID]),
-        id: i,
         material: selectedMaterial,
         address: address,
         zip: zip,
