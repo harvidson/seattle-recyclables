@@ -50,7 +50,6 @@ function createMarkers(data, selectedMaterial) {
   } else {
     const $toastContent = $(`<span>Places you can take <strong>${selectedMaterial}</strong> are already on the map.</span>`);
     Materialize.toast($toastContent, 4000, 'rounded');
-
   }
 }
 
@@ -59,7 +58,6 @@ function createMarkersFor(data, selectedMaterial, bounds, cb){
   let returnedAsync = 0;
 
   for (let i = 0; i < data.length; i++) {
-
     createMarkerPosition(data, selectedMaterial, i, function(position){
       const title = data[i].provider_name;
       const address = data[i].geolocation_address;

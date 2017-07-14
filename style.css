@@ -29,7 +29,7 @@ main {
 .tagline {
   color: white;
   margin-right: 15px;
-  margin-top: 30px;
+  margin-top: 15px;
   font-size: 18px;
 }
 /*
@@ -43,12 +43,13 @@ h1 {
   padding: 0 .5rem
 }
 
-#logo {
+.logo {
   width: 100px;
   margin-left: 30px;
-  margin-top: 15px;
-
+  margin-top: 25px;
 }
+
+
 #map {
    width: 100%;
    height: 700px;
