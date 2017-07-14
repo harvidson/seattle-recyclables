@@ -119,10 +119,18 @@ function createMarkersFor(data, selectedMaterial, bounds, cb){
       const zip = data[i].geolocation_zip;
       const phone = data[i].phone;
       const url = data[i].provider_url;
-//could do something fancy here to prevent undefined
-      const restrictions = data[i].restrictions;
-      const description = data[i].service_description;
-
+      let restrictions;
+      if (data[i].restrictions === undefined) {
+        restrictions = "See the website for possible restrictions.";
+      } else {
+        restrictions = data[i].restrictions
+      }
+      let description;
+      if (data[i].service_description === undefined) {
+        description = "Check out the website for details.";
+      } else {
+        description = data[i].service_description;
+      }
       const marker = new google.maps.Marker({
         map: map,
         position: position,
