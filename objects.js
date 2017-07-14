@@ -41,3 +41,7 @@ const threadcycle = [
     {title: 'Goodwill Northgate', location: {lat: 47.704994, lng: -122.323118}, address: `10685 5th Ave NE, Seattle, WA, 98125`},
     {title: 'Goodwill Greenwood', location: {lat: 47.701921, lng: -122.361035}, address: `10022 Holman Rd. NW, Seattle, WA, 98177`},
 ];
+
+// const architecturalSalvage = [
+//   <a class="grey-text text-lighten-5" href="http://ewsalvage.com/services/">Earthwise Architectural Salvage</a>
+// ]
