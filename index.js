@@ -7,12 +7,14 @@ let bounds = new google.maps.LatLngBounds();
 const infoWindow = new google.maps.InfoWindow({});
 //counts the number of times a user has clicked on a material and populated the map; used to determine marker color for that material
 let searchID = -1;
-const iconColors = ['ff6f00', '00acc1', '7cb342', '84ffff', 'ffd600',  '7b1fa2', 'ffa726', '5c6bc0', 'c6ff00', '039be5', 'd50000', '81d4fa', '64dd17', '6200ea', 'c51162'];
-//stores tags that tell user what materials are currently appearing on the map
+//each selected material will be assigned a color from this array, in sequence
+const iconColors = ['ff6f00', '00acc1', '7cb342', '84ffff', 'ffd600',  '7b1fa2', 'ffa726', '5c6bc0', 'c6ff00', '039be5', 'd50000', '81d4fa', '64dd17', '6200ea', 'c51162', 'ff7043', 'ffea00', '4db6ac', 'f06292', 'cfd8dc', 'cfd8dc', 'cfd8dc', 'cfd8dc'];
+//array stores tags that tell user what materials are currently appearing on the map
 let tagsArray = [];
 
 initMap();
 
+//when a material is selected from one of dropdown lists, either map will populate with colored markers or user will receive notification via toast
 $('.categories').on('click', 'li', function(event) {
   const selectedMaterial = $(this).attr('id');
     //check for a couple of special cases
@@ -31,6 +33,7 @@ $('.categories').on('click', 'li', function(event) {
   }
 });
 
+//when a tag is closed, markers of corresponding color will be taken off map
 $('.chips').on('chip.delete', function(e, chip) {
   const closedMarker = chip.tag;
   deletePins(closedMarker);
@@ -41,6 +44,12 @@ $('.chips').on('chip.delete', function(e, chip) {
   // bounds.extend(marker.position);
   // map.fitBounds(bounds);
   // map.setCenter(bounds.getCenter());
+});
+
+$('.clear').on('click', function() {
+  markers = [];
+  tagsArray = [];
+  searchID = -1;
 });
 
 // ***********************google maps***************************
