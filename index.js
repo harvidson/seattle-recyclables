@@ -1,14 +1,19 @@
+//track markers added to map
 let markers = [];
 let map;
+//determines portion of map to show
 let bounds = new google.maps.LatLngBounds();
+//gives more info on a marker, when clicked
 const infoWindow = new google.maps.InfoWindow({});
+//counts the number of times a user has clicked on a material and populated the map; used to determine marker color for that material
 let searchID = -1;
 const iconColors = ['ff6f00', '00acc1', '7cb342', '84ffff', 'ffd600',  '7b1fa2', 'ffa726', '5c6bc0', 'c6ff00', '039be5', 'd50000', '81d4fa', '64dd17', '6200ea', 'c51162'];
+//stores tags that tell user what materials are currently appearing on the map
+let tagsArray = [];
 
 initMap();
 
 $('.categories').on('click', 'li', function(event) {
-  // console.log($(this).attr('id'));
   const selectedMaterial = $(this).attr('id');
     //check for a couple of special cases
   if (selectedMaterial === 'threadcycle') {
@@ -24,6 +29,18 @@ $('.categories').on('click', 'li', function(event) {
     const material = nameMatches[selectedMaterial];
     getResults(selectedMaterial, material);
   }
+});
+
+$('.chips').on('chip.delete', function(e, chip) {
+  const closedMarker = chip.tag;
+  deletePins(closedMarker);
+  deleteTag(closedMarker);
+
+//can't get code to work to adjust map view
+
+  // bounds.extend(marker.position);
+  // map.fitBounds(bounds);
+  // map.setCenter(bounds.getCenter());
 });
 
 // ***********************google maps***************************
@@ -146,7 +163,7 @@ function getCoordinates(address, cb) {
   }).done(function(address) {
     return cb(createPosition(address));
   }).fail(function() {
-    alert("There was an error. Please search again.")
+    alert("There was an error. Please search again.");
   });
 }
 
@@ -187,7 +204,7 @@ function populateInfoWindow(marker, infoWindow) {
         <p>${marker.description}</p>
         <p>${marker.restrictions}</p>
       </div>
-      `)
+      `);
     infoWindow.open(map, marker);
     infoWindow.addListener('closeclick', function() {
       //weird bug here--if you close the infoWindow you can't immediately click on it again to reopen
@@ -206,12 +223,9 @@ function getResults(selectedMaterial, material) {
     createMarkers(data, selectedMaterial);
     addTags(selectedMaterial); //or could this go above with event listener?
   }).fail(function() {
-    alert("There was an error. Please search again.")
+    alert("There was an error. Please search again.");
   });
 }
-
-//create a tag when a material is selected
-let tagsArray = [];
 
 function newSelection(selectedMaterial) {
   let tagIsNew = true;
@@ -244,16 +258,10 @@ function colorTag() {
   }
 }
 
-$('.chips').on('chip.delete', function(e, chip) {
-  const closedMarker = chip.tag;
-  deletePins(closedMarker);
-  deleteTag(closedMarker);
-});
-
 function deletePins(markersToDelete) {
   for (marker of markers) {
     if (marker.material === markersToDelete) {
-      marker.setMap(null)
+      marker.setMap(null);
     }
   }
 }
@@ -261,7 +269,7 @@ function deletePins(markersToDelete) {
 function deleteTag(closedMarker) {
   for (let i = 0; i < tagsArray.length; i++) {
     if (tagsArray[i].tag === closedMarker) {
-      tagsArray.splice(i, 1)
+      tagsArray.splice(i, 1);
     }
   }
 }
