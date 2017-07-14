@@ -27,6 +27,9 @@ $('.categories').on('click', 'li', function(event) {
   } else if (selectedMaterial === 'mattresses') {
     createMattressMarkers();
     //otherwise, use api call against county data to map options
+  } else if (selectedMaterial === 'bulbs') {
+    const $toastContent = $(`<span>See <a href="http://www.lightrecycle.org/collection-site-locator/" target="_blank">LightRecycle Washington</a> for mapped recycling options.</span>`);
+    Materialize.toast($toastContent, 4000, 'rounded');
   } else {
     const material = nameMatches[selectedMaterial];
     getResults(selectedMaterial, material);
