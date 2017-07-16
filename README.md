@@ -1,8 +1,18 @@
-# seattle-recyclables
+# Seattle Stuffcycle
 An interactive map to locate recycling and disposal services in Seattle.
 
-Seattle has a number of services that allow residents to properly recycle or dispose of things that aren't accepted by the city's curbside garbage and recycling programs--things like batteries, electronics, pharmaceuticals, paint, mattresses, and textiles. Yet one barrier to using these services is that the information is dispersed across various websites for public and private organizations; navigating this information can be dizzying, and potential users may not even learn that some services exist. Seattle Recyclables uses Google Maps APIs to help users figure out where to take their no-longer-needed stuff.
+Seattle has a wealth of services that recycle or dispose of things that aren't accepted by the city's curbside garbage and recycling programs--things like batteries, electronics, mattresses, and worn-out textiles. Only, these services aren't always easy to find. Information about them is dispersed across websites for the city, county, and private organizations, and often without intuitive, interactive maps. To make navigating this information a little less dizzying, Seattle Stuffcycle combines King County data and Google Maps APIs to help residents figure out where to take their no-longer-needed stuff--and how to get there.
 
-<!-- The website aims to contribute to broader goals of reducing landfill waste and contamination of recycling streams and salvaging re-purposable materials. It also aims to support the city's curbside programs by reducing the amount of inappropriate materials left for them to remove. -->
+Users can select multiple types of materials they'd like to get rid of and see markers for services accepting those materials drop down on the map. By clicking on a marker for a service provider, users can access address, hours, service description and restrictions, as well as an option to see a list of all the materials the provider accepts. Tags above the map color code the markers that are showing; when a user closes a tag, the corresponding markers will be removed from the map.
 
-<!-- primary user: Max is a diligent Seattle resident who cares about recycling enough to set things aside until she figures out what to do with them. She's frustrated by how much time it takes to research various services, their locations, and hours--especially since she doesn't own a car and has to organize periodic trips to drop things off when all the accepting organizations will be open. She needs an easy way to learn what's out there, check on hours, and chart a route. -->
+# Technologies and APIs
+
+Seattle Stuffcycle uses the following APIs and technologies:
+
+* Google Maps JavaScript API
+* Google Maps Geocoding API
+* [What do I do with...? Recycling options in King County API](https://data.kingcounty.gov/resource/tzui-ygc5.json)
+* Javascript
+* jQuery
+* Materialize CSS
+* HTML5
