@@ -7,8 +7,9 @@ let bounds = new google.maps.LatLngBounds();
 const infoWindow = new google.maps.InfoWindow({});
 //counts the number of times a user has clicked on a material and populated the map; used to determine marker color for that material
 let searchID = -1;
+
 //each selected material will be assigned a color from this array, in sequence
-const iconColors = ['ff6f00', '00acc1', '7cb342', '84ffff', 'ffd600',  '7b1fa2', 'ffa726', '5c6bc0', 'c6ff00', '039be5', 'd50000', '81d4fa', '64dd17', '6200ea', 'c51162', 'ff7043', 'ffea00', '4db6ac', 'f06292', 'cfd8dc', 'cfd8dc', 'cfd8dc', 'cfd8dc'];
+const iconColors = ['ff6f00', '00acc1', '7cb342', '84ffff', 'ffd600',  '7b1fa2', 'ffa726', '5c6bc0', 'c6ff00', '039be5', 'd50000', '81d4fa', '64dd17', '6200ea', 'c51162', 'ff7043', 'ffea00', '4db6ac', 'f06292', 'cfd8dc'];
 //array stores tags that tell user what materials are currently appearing on the map
 let tagsArray = [];
 
@@ -26,10 +27,10 @@ $('.categories').on('click', 'li', function(event) {
     Materialize.toast($toastContent, 4000, 'rounded');
   } else if (selectedMaterial === 'mattresses') {
     createMattressMarkers();
-    //otherwise, use api call against county data to map options
   } else if (selectedMaterial === 'bulbs') {
     const $toastContent = $(`<span>See <a href="http://www.lightrecycle.org/collection-site-locator/" target="_blank">LightRecycle Washington</a> for mapped recycling options.</span>`);
     Materialize.toast($toastContent, 4000, 'rounded');
+  //otherwise, use api call against county data to map options
   } else {
     const material = nameMatches[selectedMaterial];
     getResults(selectedMaterial, material);
@@ -41,12 +42,6 @@ $('.chips').on('chip.delete', function(e, chip) {
   const closedMarker = chip.tag;
   deletePins(closedMarker);
   deleteTag(closedMarker);
-
-//can't get code to work to adjust map view
-
-  // bounds.extend(marker.position);
-  // map.fitBounds(bounds);
-  // map.setCenter(bounds.getCenter());
 });
 
 $('.clear').on('click', function() {
@@ -55,8 +50,7 @@ $('.clear').on('click', function() {
   searchID = -1;
 });
 
-// ***********************google maps***************************
-
+//initialize Google map
 function initMap() {
   const seattle = {
     lat: 47.620828,
@@ -68,47 +62,29 @@ function initMap() {
   });
 }
 
-function createMarkers(data, selectedMaterial) {
-  searchID++;
+//get results from King County recycling data
+function getResults(selectedMaterial, material) {
+  $.ajax({
+    url: `https://data.kingcounty.gov/resource/tzui-ygc5.json?city=Seattle&material_handled=${material}`,
+    dataType: 'json'
+  }).done(function(data) {
+    createMarkers(data, selectedMaterial);
+    addTags(selectedMaterial);
+  }).fail(function() {
+    alert("There was an error. Please search again.");
+  });
+}
 
-  if (newSelection(selectedMaterial)) {
+function createMarkers(data, selectedMaterial) {
+  if (isNewSelection(selectedMaterial)) {
+    updateSearchID();
     createMarkersFor(data, selectedMaterial, bounds, function(){
       map.fitBounds(bounds);
     });
-
   } else {
     const $toastContent = $(`<span>Places you can take <strong>${selectedMaterial}</strong> are already on the map.</span>`);
     Materialize.toast($toastContent, 4000, 'rounded');
   }
-}
-
-function createMattressMarkers() {
-  searchID++
-  const marker = new google.maps.Marker({
-    map: map,
-    position: {lat: 47.240616, lng: -122.4327794},
-    title: 'Spring Back Mattress Recycling NW',
-    animation: google.maps.Animation.DROP,
-    icon: makeMarkerIcon(iconColors[searchID]),
-    material: 'mattresses',
-    address: '117 Puyallup Ave',
-    city: 'Tacoma, WA',
-    zip: '98421',
-    phone: '253-302-3868',
-    url: 'http://www.nwfurniturebank.org/spring-back-mattress-recycling',
-    hours: 'Monday-Saturday 9:00 a.m. - 4:00 p.m.',
-    restrictions: 'The items can be in any condition but MUST be dry.',
-    description: '90% of a mattress is composed of recyclable materials. The more we can recycle, the more we can divert from landfills. For a fee we will process your mattress to ensure that it does not end up in a landfill. <br>Fees: $20 per piece for in home pick up; $10 per piece if it is brought to the furniture bank.'
-  });
-  markers.push(marker);
-  bounds.extend(marker.position);
-  map.fitBounds(bounds);
-  addTags('mattresses');
-
-
-  marker.addListener('click', function() {
-    populateInfoWindow(this, infoWindow);
-  });
 }
 
 function createMarkersFor(data, selectedMaterial, bounds, cb){
@@ -118,10 +94,11 @@ function createMarkersFor(data, selectedMaterial, bounds, cb){
     createMarkerPosition(data, selectedMaterial, i, function(position){
       const title = data[i].provider_name;
       const address = data[i].geolocation_address;
-      const hours = data[i].hours;
+      const city = data[i].mapping_location_city;
       const zip = data[i].geolocation_zip;
       const phone = data[i].phone;
       const url = data[i].provider_url;
+      const hours = data[i].hours;
       let restrictions;
       if (data[i].restrictions === undefined) {
         restrictions = "See the website for possible restrictions.";
@@ -142,6 +119,7 @@ function createMarkersFor(data, selectedMaterial, bounds, cb){
         icon: makeMarkerIcon(iconColors[searchID]),
         material: selectedMaterial,
         address: address,
+        city: city,
         zip: zip,
         phone: phone,
         url: url,
@@ -165,7 +143,6 @@ function createMarkersFor(data, selectedMaterial, bounds, cb){
 }
 
 function createMarkerPosition(data, selectedMaterial, i, cb) {
-
   if (typeof data[i].geolocation === 'object') {
     return cb({
       lat: data[i].geolocation.coordinates[1],
@@ -177,6 +154,7 @@ function createMarkerPosition(data, selectedMaterial, i, cb) {
   }
 }
 
+//if a service provider does not have coordinates entered in data, use geocoding to get them
 function getCoordinates(address, cb) {
   $.ajax({
     url: `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=AIzaSyAynp8pr3LY7S2x60jYQ5DXaJz_sMwIhho`
@@ -207,13 +185,14 @@ function makeMarkerIcon(markerColor) {
 }
 
 function populateInfoWindow(marker, infoWindow) {
+  const provider = marker.title;
   if (infoWindow.marker != marker) {
     infoWindow.marker = marker;
     infoWindow.setContent(`
-      <div class="infoWindowHeader">${marker.title}</div>
+      <div class="infoWindowHeader"><a href="#">${provider}</a></div>
       <div id="col">
         <p>${marker.address}
-        <br>Seattle, WA ${marker.zip}
+        <br>${marker.city}, WA ${marker.zip}
         <br>${marker.phone}
         </p>
         <p><br>Open ${marker.hours}</p>
@@ -223,31 +202,54 @@ function populateInfoWindow(marker, infoWindow) {
       <div>
         <p>${marker.description}</p>
         <p>${marker.restrictions}</p>
+        <div class="center-align">
+          <a class="get-full-list waves-effect waves-light btn cyan darken-3">Full list of accepted materials</a>
+        </div>
       </div>
       `);
     infoWindow.open(map, marker);
     infoWindow.addListener('closeclick', function() {
-      //weird bug here--if you close the infoWindow you can't immediately click on it again to reopen
       infoWindow.close();
+    });
+    $('.get-full-list').on('click', function() {
+      getListofServices(provider)
     });
   }
 }
 
-// ************results from King County data**************
-
-function getResults(selectedMaterial, material) {
+function getListofServices(provider) {
+  provider = provider.replace(/&/, '%26');
   $.ajax({
-    url: `https://data.kingcounty.gov/resource/tzui-ygc5.json?city=Seattle&material_handled=${material}`,
+    url: `https://data.kingcounty.gov/resource/tzui-ygc5.json?provider_name=${provider}`,
     dataType: 'json'
-  }).done(function(data) {
-    createMarkers(data, selectedMaterial);
-    addTags(selectedMaterial); //or could this go above with event listener?
+  }).done(function(provider_data) {
+    displayListofServices(provider_data)
   }).fail(function() {
-    alert("There was an error. Please search again.");
+    alert(`There was an error with ${getListofServices}. Please search again.`);
   });
 }
 
-function newSelection(selectedMaterial) {
+function displayListofServices(provider_data) {
+  $('.full-list').empty();
+
+  const $organization = $('<h5>').text(`${provider_data[0].provider_name}`);
+  const $intro = $('<p>').text(`${provider_data[0].provider_name} accepts the following materials:`);
+  const $list = $('<ul>').addClass('.browser-default');
+
+  for (let i = 0; i < provider_data.length; i++) {
+    const $item = $('<li>').text(`${provider_data[i].material_handled}`);
+    $list.append($item);
+  }
+
+  $('.full-list').append($organization);
+  $intro.insertAfter($organization);
+  $list.insertAfter($intro);
+  window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+
+}
+
+
+function isNewSelection(selectedMaterial) {
   let tagIsNew = true;
 
   for (let i = 0; i < tagsArray.length; i++) {
@@ -258,8 +260,16 @@ function newSelection(selectedMaterial) {
   return tagIsNew;
 }
 
+function updateSearchID() {
+  if (searchID < 19) {
+    searchID++;
+  } else {
+    searchID = 0;
+  }
+}
+
 function addTags(selectedMaterial) {
-  if (newSelection(selectedMaterial)) {
+  if (isNewSelection(selectedMaterial)) {
     tagsArray.push({
       tag: selectedMaterial,
       color: iconColors[searchID]
@@ -279,7 +289,7 @@ function colorTag() {
 }
 
 function deletePins(markersToDelete) {
-  for (marker of markers) {
+  for (const marker of markers) {
     if (marker.material === markersToDelete) {
       marker.setMap(null);
     }
@@ -291,5 +301,41 @@ function deleteTag(closedMarker) {
     if (tagsArray[i].tag === closedMarker) {
       tagsArray.splice(i, 1);
     }
+  }
+}
+
+//special case for mattresses, since only location is in Tacoma and API query is otherwise for Seattle
+function createMattressMarkers() {
+  if (isNewSelection('mattresses')) {
+    //check to see whether a new color remains to add to array
+    updateSearchID()
+
+    const marker = new google.maps.Marker({
+      map: map,
+      position: {lat: 47.240616, lng: -122.4327794},
+      title: 'Spring Back Mattress Recycling NW',
+      animation: google.maps.Animation.DROP,
+      icon: makeMarkerIcon(iconColors[searchID]),
+      material: 'mattresses',
+      address: '117 Puyallup Ave',
+      city: 'Tacoma',
+      zip: '98421',
+      phone: '253-302-3868',
+      url: 'http://www.nwfurniturebank.org/spring-back-mattress-recycling',
+      hours: 'Monday-Saturday 9:00 a.m. - 4:00 p.m.',
+      restrictions: 'The items can be in any condition but MUST be dry.',
+      description: '90% of a mattress is composed of recyclable materials. The more we can recycle, the more we can divert from landfills. For a fee we will process your mattress to ensure that it does not end up in a landfill. <br>Fees: $20 per piece for in home pick up; $10 per piece if it is brought to the furniture bank.'
+    });
+    markers.push(marker);
+    bounds.extend(marker.position);
+    map.fitBounds(bounds);
+    addTags('mattresses');
+
+    marker.addListener('click', function() {
+      populateInfoWindow(this, infoWindow);
+    });
+  } else {
+    const $toastContent = $(`<span>Places you can take <strong>mattresses</strong> are already on the map.</span>`);
+    Materialize.toast($toastContent, 4000, 'rounded');
   }
 }
